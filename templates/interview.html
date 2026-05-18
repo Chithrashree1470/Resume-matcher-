@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interview Preparation</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .split {
+            display: flex;
+        }
+        .left, .right {
+            width: 50%;
+            padding: 20px;
+        }
+        iframe {
+            width: 100%;
+            height: 500px;
+            border-radius: 10px;
+        }
+        .question-box {
+            background: white;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2 class="text-center">🎯 Interview Preparation</h2>
+
+    <div class="split">
+
+        <!-- LEFT: Resume Preview -->
+        <div class="left">
+            <h4>📄 Resume</h4>
+            <iframe src="/uploads/{{ resume_name }}"></iframe>
+        </div>
+
+        <!-- RIGHT: Questions -->
+        <div class="right">
+            <h4>🎤 Interview Questions</h4>
+
+            {% for q in questions %}
+            <div class="question-box">
+                {{ q }}
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>AI Resume Matcher</title>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+<style>
+body {
+    background: linear-gradient(135deg, #4a5f88, #e4dfe8);
+    font-family:'Times New Roman', Times, serif;
+    min-height: 100vh;
+}
+
+/* Container */
+.container {
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+/* Card Styling */
+.card {
+    padding: 25px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+.form-group{
+    font-size: 30px;
+    color:purple;
+}
+/* Header */
+.card-header {
+    background: linear-gradient(90deg, #955ed0, #e2edef);
+    color: rgb(7, 7, 7);
+    border-radius: 12px 12px 0 0;
+    padding: 15px;
+    font-size: 32px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-align:center;
+}
+
+/* Form Inputs */
+textarea, input[type="file"] {
+    border-radius: 10px !important;
+    border: 1px solid #ccc;
+    transition: all 0.3s ease;
+}
+
+textarea:focus, input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0,123,255,0.3);
+}
+
+/* Button */
+.btn-primary {
+    width: 100%;
+    border-radius: 10px;
+    font-weight: bold;
+    padding: 10px;
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    border: none;
+    transition: 0.3s;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #0056b3, #0096c7);
+    transform: scale(1.02);
+}
+
+/* Alert Box */
+.alert {
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* Table Styling */
+.table {
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    background-color: #343a40;
+    color: white;
+}
+
+.table tbody tr {
+    transition: background 0.2s ease;
+
+}
+
+.table tbody tr:hover {
+    background-color: #f1f3f6;
+}
+
+/* Rank Highlight */
+.table tbody tr:nth-child(1) {
+    background-color: #fff3cd;
+    font-weight: bold;
+    font-size:20px;
+}
+
+.table tbody tr:nth-child(2) {
+    background-color:  #fff3cd;
+}
+
+.table tbody tr:nth-child(3) {
+    background-color: #fff3cd;
+}
+.table tbody tr:nth-child(4){
+    background-color: #fff3cd;
+}
+.table tbody tr:nth-child(5) {
+    background-color: #fff3cd;
+}
+/* Smooth Animations */
+* {
+    transition: all 0.2s ease-in-out;
+}
+/* Custom File Upload */
+.custom-file-upload {
+    border: 2px dashed #aaa;
+    padding: 20px;
+    text-align: center;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: 0.3s;
+    background-color: #f9f9f9;
+}
+
+.custom-file-upload:hover {
+    border-color: #007bff;
+    background-color: #eef6ff;
+}
+
+.custom-file-upload input {
+    display: none;
+}
+
+.file-info {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #333;
+}
+
+.file-list {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #555;
+    max-height: 120px;
+    overflow-y: auto;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <div class="card-header">
+            <h1>Resume Ranker!</h1>
+            🧾“AI-Based Resume Matching System using NLP”
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST" action="/matcher" enctype="multipart/form-data">
+
+                <div class="form-group">
+                    <label><b>Job Description</b></label>
+                    <textarea class="form-control" name="job_description" rows="5" placeholder="Paste job description here..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label><b>Upload Resumes</b></label>
+                    <div class="custom-file-upload">
+    <label for="resumes">
+        📂 Click to Choose Resumes or Drag & Drop
+    </label>
+    <input type="file" id="resumes" name="resumes" multiple required>
+</div>
+
+<div class="file-info" id="fileCount"></div>
+<div class="file-list" id="fileNames"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">🔍 Match Resumes</button>
+
+            </form>
+
+            {% if message %}
+            <div class="alert alert-info mt-4">
+                <h5>{{ message }}</h5>
+
+                <table class="table table-bordered text-center">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Resume</th>
+                            <th>Match %</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for resume, score in results %}
+                        <tr>
+                            <td>
+                                {% if loop.index == 1 %}
+                                    <span class="badge badge-rank gold">🥇1</span>
+                                {% elif loop.index == 2 %}
+                                    <span class="badge badge-rank silver">🥈2</span>
+                                {% elif loop.index == 3 %}
+                                    <span class="badge badge-rank bronze">🥉3</span>
+                                {% else %}
+                                    {{ loop.index }}
+                                {% endif %}
+                            </td>
+
+                            <td>{{ resume }}</td>
+
+                            <td><b>{{ score }}%</b></td>
+
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success"
+                                         style="width: {{ score }}%">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                <form method="POST" action="/interview">
+    <div class="form-group mt-3">
+        <label>Enter Resume Name to Continue:</label>
+        <input type="text" name="selected_resume" class="form-control" placeholder="Enter exact file name" required>
+    </div>
+    <button type="submit" class="btn btn-success">Continue</button>
+</form>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+<script>
+document.getElementById("resumes").addEventListener("change", function() {
+    let files = this.files;
+
+    let fileCount = document.getElementById("fileCount");
+    let fileNames = document.getElementById("fileNames");
+
+    if (files.length > 0) {
+        fileCount.innerHTML = "✅ " + files.length + " file(s) selected";
+
+        let names = "";
+        for (let i = 0; i < files.length; i++) {
+            names += "📄 " + files[i].name + "<br>";
+        }
+
+        fileNames.innerHTML = names;
+    } else {
+        fileCount.innerHTML = "";
+        fileNames.innerHTML = "";
+    }
+});
+</script>
+
+</body>
+</html>
